@@ -1,0 +1,54 @@
+global:
+  namespace: azure-backup
+  # taks choices are pod or cron. `pod` creates a standalone pod for a manual backup / restore, `cron` creates a cronjob
+  task: "cron" 
+secret:
+  configFile: /etc/azure-storage-manager/azure-storage-manager-keys
+  name: azure-storage-manager
+  keyValuePairs: |
+    sourceContainerName: <changeme>
+    sourceAccountConnectString: <changeme>
+    destinationContainerName: <changeme>
+    destAccountConnectString: <changeme>
+
+cronjob:
+  name: "azure-archive-cronjob"
+  schedule: "0 1 * * *"
+  command: ["ash", "-c", "/mnt/app/azarchive backup-to-container -dp <destinationContainerName> -P /mnt/backup -w 32 -b 100"]
+
+# Pod configuration
+pod:
+  name: azure-archive
+  image: 
+    name: mumbley/azarchive
+    version: "go-v0.4"
+  command: ["ash", "-c", "sleep infinity"]
+  mountPath: /mnt
+  containerName: ubuntu-container
+  resources:
+      requests:
+        cpu: 4
+        memory: 512Mi
+      limits:
+        cpu: 8
+        memory: 8192Mi
+
+# Persistent Volume configuration
+volumeMounts:
+  - name: azure-archive-premium
+    size: 200Gi
+    accessModes:
+      - ReadWriteOnce
+    hostPath: /mnt/backup
+
+persistentVolumeClaim:
+  - name: azure-archive-premium
+    storageClassName: "managed-premium"
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 200Gi
+
+
+      

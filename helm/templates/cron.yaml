@@ -1,0 +1,51 @@
+{{- if eq .Values.global.task "cron" }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.cronjob.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  schedule: "{{ .Values.cronjob.schedule }}" # Schedule in cron format
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ .Values.pod.containerName }}
+            image: {{ printf "%s:%s" .Values.pod.image.name .Values.pod.image.version | quote }}
+            command: {{ toYaml .Values.cronjob.command | nindent 12 }}
+            env:
+            - name: "GOMAXPROCS"
+              value: {{ mul 2 .Values.pod.resources.limits.cpu | quote }}
+            - name: "BACKUP_CONFIG_FILE"
+              value: {{ .Values.secret.configFile | quote }}
+            volumeMounts:
+            {{- range .Values.volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .hostPath }}
+            {{- end }}
+            - name: secret-volume
+              mountPath: {{ .Values.secret.configFile }}
+              subPath: keyValuePairs
+              readOnly: true
+            resources:
+              requests:
+                cpu: {{ .Values.pod.resources.requests.cpu }}
+                memory: {{ .Values.pod.resources.requests.memory }}
+              limits:
+                cpu: {{ .Values.pod.resources.limits.cpu }}
+                memory: {{ .Values.pod.resources.limits.memory }}
+          volumes:
+          {{- range .Values.persistentVolumeClaim }}
+          - name: {{ .name }}
+            persistentVolumeClaim:
+              claimName: {{ .name }}
+          {{- end }}
+          - name: secret-volume
+            secret:
+              secretName: {{ .Values.secret.name }}
+              items:
+              - key: keyValuePairs
+                path: keyValuePairs
+          restartPolicy: OnFailure
+{{- end }}
