@@ -73,6 +73,11 @@ Backup a container to a path `/mnt/backup` with a derived tarfile name with cust
 
  Download a tarfile (-t) from the default destination storage container (the destination container in the config file) The name of the tarfile can be found in the Azure console at `home->storage accounts->storage account name->containers`. Navigate the blob finder   until you reach the tarfile. Click on the terfile and it will reveal its full path. This can be pasted into the command line. This command can use a custom worker pool but does not require a batch size.
 
+`/azarchive download-tarfile -t "<fullTarFileContainerPath>" -dc "<connectionStringOfTarFileContainer>" -dn "<tarFileContainerName>" -w 16 -b 200 -dp "<localPathToStoreTarFile>"`
+
+Download a tarfile from a specific storage account and container. 
+This might look confusing. The command is using destination connection string and destination container name as a source (-dc -dn). This is because, by default, the destination connection string and destination container name are the _target_ for the backup. In a restore, you want to source the tar file from the target backup location.
+
 `/mnt/app/azarchive restore -t /mnt/backup/testblobstore-YYYY-MM-DD.tar -w 32 -b 100`
 
 Restore a tarfile (-t) including the full path to the default source container (the source being the source storage container defined in the config file) with custom worker count (-w) of 32 and batch size (-b) of 100 files per worker.
