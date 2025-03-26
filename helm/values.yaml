@@ -21,7 +21,7 @@ pod:
   name: azure-archive
   image: 
     name: mumbley/azarchive
-    version: "go-v0.4"
+    version: "go-v0.6"
   command: ["ash", "-c", "sleep infinity"]
   mountPath: /mnt
   containerName: ubuntu-container
