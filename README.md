@@ -1,7 +1,8 @@
-# Azure Store Container Archive 
+# Azure Storagee Container Archive
+## Backup and restore Azure storage containers, using go routines to help bypass Azure throttling
 
   ## Tl;Dr 
-  If you are in the middle of an incident and need to recover a storage archive follow these steps:
+  If you are already using this tool, are in the middle of an incident and need to recover a storage archive follow these steps:
   1. Download the Helm chart
   2. `cd <chart path>`
   3. `helm upgrade --install azure-backup --namespace azure-backup --create-namespace --set global.task=pod .` This changes the deployment from a cronjob to a pod. After a short time, the pod will become available and you can attach.
