@@ -1,4 +1,4 @@
-# Azure Store Container Archive Helm Chart
+# Azure Store Container Archive 
 
   ## Tl;Dr 
   If you are in the middle of an incident and need to recover a storage archive follow these steps:
