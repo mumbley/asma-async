@@ -1,4 +1,4 @@
-# Azure Storagee Container Archive
+# Azure Storage Container Archive
 ## Backup and restore Azure storage containers, using go routines to help bypass Azure throttling
 
   ## Tl;Dr 
